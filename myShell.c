@@ -6,7 +6,8 @@ int main()
     while (1)
     {
         getLocation();
-        char* input = getInputFromUser();
+        break;
+        // char* input = getInputFromUser();
     }
     return 0;
 }
