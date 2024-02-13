@@ -3,7 +3,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <unistd.h>
-#define SIZE_BUFF 256
+# include <sys/types.h>
+# include <pwd.h>
+#define SIZE_BUFF 4096
+#define SIZE_HOSTNAME 256
 char* getInputFromUser();
 /**
  * Splits a string into individual tokens based on whitespace.
