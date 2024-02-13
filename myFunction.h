@@ -8,7 +8,6 @@
 #define SIZE_BUFF 4096
 #define SIZE_HOSTNAME 256
 char* getInputFromUser();
-// hh
 /**
  * Splits a string into individual tokens based on whitespace.
  * 
