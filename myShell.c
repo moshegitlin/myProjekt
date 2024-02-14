@@ -6,8 +6,19 @@ int main()
     while (1)
     {
         getLocation();
+        char* input = getInputFromUser();
+         puts(input);
+        char **arguments = splitArgument(input);
+        for (int i = 0; *(arguments + i) != NULL; i++)
+        {
+            puts(*(arguments+i));
+            // puts(arguments[i]);
+        }
+
+        free(arguments);
+        free(input);
+
         break;
-        // char* input = getInputFromUser();
     }
     return 0;
 }
