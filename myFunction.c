@@ -1,9 +1,4 @@
 #include "myFunction.h"
-char *my_strtok(char *str, const char *delim);  // Forward declaration
-
-// The rest of your code...
-
-//
 void getLocation()
 {
     struct passwd *pw; // זה מצביע למבנה  שמכילאת פרטי המשתמש במערכת ההפעלה
