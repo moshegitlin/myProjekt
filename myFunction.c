@@ -47,7 +47,7 @@ void getLocation()
     printf("$ ");
     free(location);
 }
-//  יש ליצור פונקציה הקולטת מחרוזת מהמשתמש  באופן דינמי כמו שעשינו בשיעור קודם
+
 char *getInputFromUser()
 {
     char ch;
@@ -65,6 +65,13 @@ char *getInputFromUser()
     return str;
 }
 
+
+void logout(char *input)
+{
+    free(input);
+    puts("logout");
+    exit(EXIT_SUCCESS); // EXIT_SUCCESS = 0
+}
 
 char *my_strtok(char *str, const char *delim) {
     static char *next_token = NULL;
@@ -122,3 +129,81 @@ char **splitArgument(char *str)
     return argumnts;
 }
 
+void echo(char **arguments)
+{
+    while (*(++arguments))
+        printf("%s ", *arguments);
+
+    puts("");
+}
+
+void cd(char **path) {
+    if (strncmp(path[1], "\"", 1) != 0 && path[2] != NULL) {
+        printf("-myShell: cd: too many arguments\n");
+        return;
+    } // בדיקה האם יש יותר מדי ארגומנטים
+ 
+    else if (strncmp(path[1], "\"", 1) == 0) { // אם יש גרש בהתחלה
+        int i = 2; //אחרי הלולאה המשתנה i יכיל את המיקום של הארגומנט האחרון
+        while (path[i] != NULL) {
+            i++;
+        }
+        int size = strlen(path[i - 1])-1; // אורך הארגומנט האחרון
+        if(strcmp(path[i - 1]+size, "\"") != 0){ //בדיקה אם יש גרש בסוף
+           printf("-myShell: cd: too many arguments\n");
+            return;
+        }
+        char *temp = (char *)malloc((strlen(path[1]) + 1) * sizeof(char)); // הקצאת זכרון למחרוזת שאמורה להחזיק את הנתיב
+        strcpy(temp, path[1]); // העתקת המחרוזת למשתנה הזמני
+        strcat(temp, " "); // הוספת רווח בסוף המחרוזת
+        memmove(temp,temp+1,strlen(temp));// מחיקת הגרש
+        for(int j=2;j<i;j++){
+            temp = (char *)realloc(temp,((strlen(path[j])+2) * sizeof(char))); //הוספת מקום למחרוזת הבאה
+            if(j == i-1){ // אם זה הארגומנט האחרון
+                strcat(temp, path[j]); // הוספת הארגומנט למחרוזת
+                 temp[strlen(temp)-1] = '\0'; // מחיקת הגרש
+            }else{
+               strcat(temp, path[j]); // הוספת הארגומנט למחרוזת
+                 strcat(temp, " "); // הוספת רווח בסוף המחרוזת
+            }  
+        }
+        if (chdir(temp) != 0) { // בדיקה האם הצלחתי לשנות נתיב
+            printf("-myShell: cd: %s: No such file or directory", temp);
+        }
+        free(temp);
+    }
+    else if (chdir(path[1]) != 0)  
+        printf("-myShell: cd: %s: No such file or directory\n", path[1]);
+}
+
+
+void cp(char **arguments)
+{
+    char ch;
+    FILE *src, *des;
+    if ((src = fopen(arguments[1], "r")) == NULL)
+    {
+        puts("error");
+        return;
+    }
+
+    if ((des = fopen(arguments[2], "w")) == NULL)
+    {
+        puts("error");
+        fclose(src);
+        return;
+    }
+    while ((ch = fgetc(src)) != EOF)
+        fputc(ch, des);
+
+    fclose(src);
+    fclose(des);
+}
+
+// input = cd "OneDrive - Ariel University"\0
+// after split
+// input = cd\0"OneDrive\0-\0Ariel\0University"\0
+//[cd\0, "OneDrive\0,  -\0,  Ariel\0,  University"\0,  NULL]
+
+// input = cd\0"OneDrive - Ariel University"\0
+//[cd\0, "OneDrive ,  - ,  Ariel ,  University"\0,  NULL]

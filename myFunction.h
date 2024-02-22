@@ -33,16 +33,10 @@ char** splitArgument(char*);
 void getLocation();
 
 
-// char str[10]= hello
-// char* p =str;
-// *p ~ p[0]
-// *p+1 ~ p[1]
-
-
-// char matstr[6][6]= {100x={h,e,l,l,o},378x={h,e,l,l,o},1987x={h,e,l,l,o},649x={h,e,l,l,o},{h,e,l,l,o},{h,e,l,l,o}}
-//char** pp = matstr
-// *(*(pp)) ~ pp[0][0]
-// *(*(pp)+1)+2 ~ pp[1][2]
+void logout(char* input);
+void echo(char** arguments);
+void cd(char **);
+void cp(char ** arguments);
 
 
 
