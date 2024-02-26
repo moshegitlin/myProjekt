@@ -22,4 +22,4 @@ myFunction.o::myFunction.c myFunction.h
 
 
 clean:
-	rm -f *.o *.out  
+	rm -f *.o *.out myShell

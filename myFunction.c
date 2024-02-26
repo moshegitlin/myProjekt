@@ -136,7 +136,23 @@ void echo(char **arguments)
 
     puts("");
 }
-
+char* concatenateStrings(char** arguments,int size){
+    char *temp = (char *)malloc((strlen(arguments[1]) + 1) * sizeof(char)); // הקצאת זכרון למחרוזת שאמורה להחזיק את הנתיב
+        strcpy(temp, arguments[1]); // העתקת המחרוזת למשתנה הזמני
+        memmove(temp,temp+1,strlen(temp));// מחיקת הגרש
+        strcat(temp, " "); // הוספת רווח בסוף המחרוזת
+        for(int j=2;j<size;j++){
+            temp = (char *)realloc(temp,((strlen(arguments[j])+2) * sizeof(char))); //הוספת מקום למחרוזת הבאה
+            if(j == size-1){ // אם זה הארגומנט האחרון
+                strcat(temp, arguments[j]); // הוספת הארגומנט למחרוזת
+                 temp[strlen(temp)-1] = '\0'; // מחיקת הגרש
+            }else{
+               strcat(temp, arguments[j]); // הוספת הארגומנט למחרוזת
+                 strcat(temp, " "); // הוספת רווח בסוף המחרוזת
+            }  
+        }
+    return temp;
+}
 void cd(char **path) {
     if (strncmp(path[1], "\"", 1) != 0 && path[2] != NULL) {
         printf("-myShell: cd: too many arguments\n");
@@ -153,20 +169,7 @@ void cd(char **path) {
            printf("-myShell: cd: too many arguments\n");
             return;
         }
-        char *temp = (char *)malloc((strlen(path[1]) + 1) * sizeof(char)); // הקצאת זכרון למחרוזת שאמורה להחזיק את הנתיב
-        strcpy(temp, path[1]); // העתקת המחרוזת למשתנה הזמני
-        strcat(temp, " "); // הוספת רווח בסוף המחרוזת
-        memmove(temp,temp+1,strlen(temp));// מחיקת הגרש
-        for(int j=2;j<i;j++){
-            temp = (char *)realloc(temp,((strlen(path[j])+2) * sizeof(char))); //הוספת מקום למחרוזת הבאה
-            if(j == i-1){ // אם זה הארגומנט האחרון
-                strcat(temp, path[j]); // הוספת הארגומנט למחרוזת
-                 temp[strlen(temp)-1] = '\0'; // מחיקת הגרש
-            }else{
-               strcat(temp, path[j]); // הוספת הארגומנט למחרוזת
-                 strcat(temp, " "); // הוספת רווח בסוף המחרוזת
-            }  
-        }
+        char *temp = concatenateStrings(path,i); // הפעולה מחזירה את המחרוזת המשולבת
         if (chdir(temp) != 0) { // בדיקה האם הצלחתי לשנות נתיב
             printf("-myShell: cd: %s: No such file or directory", temp);
         }
