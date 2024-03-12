@@ -73,15 +73,15 @@ void logout(char *input)
     exit(EXIT_SUCCESS); // EXIT_SUCCESS = 0
 }
 
-char *my_strtok(char *str, const char *delim) {
-    static char *next_token = NULL;
-    static size_t original_length = 0;  
+char *my_strtok(char *str, const char delim,int check_quotes) {
+    static char *next_token = NULL; 
     char *token;
+    static int check_quotes_saved;
 
     if (str != NULL) { // אם זה הפעם הראשונה שאני מקבל את המחרוזת
         token = str; // אני מצביע על המחרוזת
-        original_length = strlen(str); // אני שומר את אורך המחרוזת
         next_token= NULL; // אני מאפס את המצביע של המחרוזת הבאה
+        check_quotes_saved = check_quotes;
     } 
     else {// אם זה לא הפעם הראשונה שאני מקבל את המחרוזת
     
@@ -90,13 +90,31 @@ char *my_strtok(char *str, const char *delim) {
         }
         token = next_token;// אני מצביע על המחרוזת הבאה כדי שאני יוכל להכניס על neext_token את האות הסיומת
     }
-
-    for(int i=0;i<original_length;i++){ //אני מחפש את המקום הראשון שבו יש רווח
-        if(*(token+i)==' '){
+    if(check_quotes_saved==1) {
+        if(*token == '"') {
+            token++;
+            char *end = strchr(token, '"');
+            if(end != NULL) {
+                next_token = end;
+                *next_token = '\0';
+                next_token++;
+            if(*next_token=='\0'){// אם הגעתי לסוף המחרוזת ואין רווח אז סימן שאני בסוף המחרוזת 
+            next_token=NULL;
+            }
+            else{
+            next_token++;
+            }
+            return token;
+            }
+            token--;
+        }
+    }
+    for(int i=0;i<strlen(token);i++){ //אני מחפש את המקום הראשון שבו יש רווח
+        if(*(token+i)== delim){
             next_token=token+i;
             break;
         }
-        if(i==original_length-1){// אם הגעתי לסוף המחרוזת ואין רווח אז סימן שאני בסוף המחרוזת 
+        if(i==strlen(token)-1){// אם הגעתי לסוף המחרוזת ואין רווח אז סימן שאני בסוף המחרוזת 
             next_token=NULL;
         }
     }
@@ -104,20 +122,18 @@ char *my_strtok(char *str, const char *delim) {
         *next_token = '\0';
         next_token += 1;
     }
-
     return token;
 }
 
 char **splitArgument(char *str)
 {
     char *subStr;
-    subStr = my_strtok(str, " ");
+    subStr = my_strtok(str, ' ',1);
     int size = 2;
     int index = 0;
     char **argumnts = (char **)malloc(size * sizeof(char *));
-    // argumnts[index] = subStr;
-    *(argumnts + index) = subStr; // [subStr,subStr,subStr,subStr,NULL]
-    while ((subStr = my_strtok(NULL, " ")) != NULL)
+    *(argumnts + index) = subStr;
+    while ((subStr = my_strtok(NULL, ' ',1)) != NULL)
     {
         index++;
         size++;
@@ -128,7 +144,6 @@ char **splitArgument(char *str)
 
     return argumnts;
 }
-
 void echo(char **arguments)
 {
     while (*(++arguments))
@@ -146,7 +161,8 @@ char* concatenateStrings(char** arguments,int size){
             if(j == size-1){ // אם זה הארגומנט האחרון
                 strcat(temp, arguments[j]); // הוספת הארגומנט למחרוזת
                  temp[strlen(temp)-1] = '\0'; // מחיקת הגרש
-            }else{
+            }
+            else{
                strcat(temp, arguments[j]); // הוספת הארגומנט למחרוזת
                  strcat(temp, " "); // הוספת רווח בסוף המחרוזת
             }  
@@ -154,32 +170,13 @@ char* concatenateStrings(char** arguments,int size){
     return temp;
 }
 void cd(char **path) {
-    if (strncmp(path[1], "\"", 1) != 0 && path[2] != NULL) {
+    if (path[2] != NULL) {
         printf("-myShell: cd: too many arguments\n");
         return;
     } // בדיקה האם יש יותר מדי ארגומנטים
- 
-    else if (strncmp(path[1], "\"", 1) == 0) { // אם יש גרש בהתחלה
-        int i = 2; //אחרי הלולאה המשתנה i יכיל את המיקום של הארגומנט האחרון
-        while (path[i] != NULL) {
-            i++;
-        }
-        int size = strlen(path[i - 1])-1; // אורך הארגומנט האחרון
-        if(strcmp(path[i - 1]+size, "\"") != 0){ //בדיקה אם יש גרש בסוף
-           printf("-myShell: cd: too many arguments\n");
-            return;
-        }
-        char *temp = concatenateStrings(path,i); // הפעולה מחזירה את המחרוזת המשולבת
-        if (chdir(temp) != 0) { // בדיקה האם הצלחתי לשנות נתיב
-            printf("-myShell: cd: %s: No such file or directory", temp);
-        }
-        free(temp);
-    }
-    else if (chdir(path[1]) != 0)  
+     if (chdir(path[1]) != 0)  
         printf("-myShell: cd: %s: No such file or directory\n", path[1]);
 }
-
-
 void cp(char **arguments)
 {
     char ch;
@@ -202,6 +199,7 @@ void cp(char **arguments)
     fclose(src);
     fclose(des);
 }
+
 
 // input = cd "OneDrive - Ariel University"\0
 // after split
