@@ -244,9 +244,6 @@ void systemCall(char **arguments)
             exit(EXIT_FAILURE);
     }
 }
-#include <fcntl.h>
-#include <sys/stat.h>
-
 void mypipe(char **argv1,char ** argv2){
 
     int fildes[2];
