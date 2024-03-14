@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 # include <sys/types.h>
+#include <sys/wait.h>
 # include <pwd.h>
+#include <dirent.h>
 #define SIZE_BUFF 4096
 #define SIZE_HOSTNAME 256
 char* getInputFromUser();
@@ -37,6 +39,9 @@ void logout(char* input);
 void echo(char** arguments);
 void cd(char **);
 void cp(char ** arguments);
-
+void get_dir();
+void delete(char **arguments);
+void systemCall(char **arguments);
+void mypipe(char **,char ** );
 
 

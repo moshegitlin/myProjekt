@@ -90,7 +90,7 @@ char *my_strtok(char *str, const char delim,int check_quotes) {
         }
         token = next_token;// אני מצביע על המחרוזת הבאה כדי שאני יוכל להכניס על neext_token את האות הסיומת
     }
-    if(check_quotes_saved==1) {
+    if(check_quotes_saved) {
         if(*token == '"') {
             token++;
             char *end = strchr(token, '"');
@@ -179,6 +179,14 @@ void cd(char **path) {
 }
 void cp(char **arguments)
 {
+    if(arguments[1]==NULL || arguments[2]==NULL){
+        puts("error");
+        return;
+    }
+    if(arguments[3]!=NULL){
+        puts("error");
+        return;
+    }
     char ch;
     FILE *src, *des;
     if ((src = fopen(arguments[1], "r")) == NULL)
@@ -199,12 +207,68 @@ void cp(char **arguments)
     fclose(src);
     fclose(des);
 }
+void delete(char **path)
+{
+    if (path[2] != NULL)
+    {
+        printf("-myShell: delete: too many arguments\n");
+        return;
+    }
+    if (unlink(path[1]) != 0)
+        printf("-myShell: delete: %s: No such file or directory\n", path[1]);
+}
+void get_dir()
+{
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir("./")) == NULL)
+    {
+        perror("");
+        return;
+    }
+    while ((ent = readdir(dir)) != NULL)
+        printf("%s ", ent->d_name);
+    puts("");
+}
+void systemCall(char **arguments)
+{
+    pid_t pid = fork();
+    if (pid == -1)
+    {
+        printf("fork err\n");
+        return;
+    }
+    if (pid == 0)
+    {
+        if (execvp(arguments[0], arguments) == -1)
+            exit(EXIT_FAILURE);
+    }
+}
+#include <fcntl.h>
+#include <sys/stat.h>
 
+void mypipe(char **argv1,char ** argv2){
 
-// input = cd "OneDrive - Ariel University"\0
-// after split
-// input = cd\0"OneDrive\0-\0Ariel\0University"\0
-//[cd\0, "OneDrive\0,  -\0,  Ariel\0,  University"\0,  NULL]
+    int fildes[2];
+    if (fork() == 0)
+    {
+        pipe(fildes);
+        if (fork() == 0)
+        {
+            /* first component of command line */
+            close(STDOUT_FILENO);
+            dup(fildes[1]);
+            close(fildes[1]);
+            close(fildes[0]);
+            execvp(argv1[0], argv1);
+        }
+        /* 2nd command component of command line */
+        close(STDIN_FILENO);
+        dup(fildes[0]);
+        close(fildes[0]);
+        close(fildes[1]);
+        /* standard input now comes from pipe */
+        execvp(argv2[0], argv2);
+    }
+}
 
-// input = cd\0"OneDrive - Ariel University"\0
-//[cd\0, "OneDrive ,  - ,  Ariel ,  University"\0,  NULL]
