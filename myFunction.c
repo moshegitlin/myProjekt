@@ -109,8 +109,19 @@ char *my_strtok(char *str, const char delim,int check_quotes) {
             token--;
         }
     }
+    int size = strlen(token);
+     if(*(token)==delim){
+    for(int i=0; i<size;i++){
+       if(*(token+i)!= delim){
+              token=token+i;
+              break;
+       }
+    }
+     }
+    
     for(int i=0;i<strlen(token);i++){ //אני מחפש את המקום הראשון שבו יש רווח
-        if(*(token+i)== delim){
+
+        if(*(token+i)== delim && *(token+i+1)!= delim){
             next_token=token+i;
             break;
         }
@@ -120,7 +131,7 @@ char *my_strtok(char *str, const char delim,int check_quotes) {
     }
     if (next_token != NULL) {
         *next_token = '\0';
-        next_token += 1;
+        next_token ++;
     }
     return token;
 }
@@ -235,12 +246,13 @@ void systemCall(char **arguments)
     pid_t pid = fork();
     if (pid == -1)
     {
-        printf("fork err\n");
+       
         return;
     }
     if (pid == 0)
     {
         if (execvp(arguments[0], arguments) == -1)
+         printf("%s: command not found\n", arguments[0]);
             exit(EXIT_FAILURE);
     }
 }
@@ -268,4 +280,38 @@ void mypipe(char **argv1,char ** argv2){
         execvp(argv2[0], argv2);
     }
 }
-
+void move(char **arguments)
+{
+    if(arguments[1]==NULL){
+        puts("mv: missing file operand");
+        return;
+    }
+    if(arguments[2]==NULL){
+        printf("mv: missing destination file operand after '%s'", arguments[1]);
+        return;
+    }
+    if(arguments[3]!=NULL){
+        puts("too many arguments");
+        return;
+    }
+    cp(arguments);
+    if(errno==2){
+        printf("mv: cannot stat '%s': No such file or directory\n", arguments[1]);
+    }
+    else if(errno==13){
+        printf("mv: cannot create regular file '%s': Permission denied\n", arguments[2]);
+    }
+    else if(errno==21){
+        printf("mv: cannot create regular file '%s': Is a directory\n", arguments[2]);
+    }
+    else if(errno==17){
+        printf("mv: cannot create regular file '%s': File exists\n", arguments[2]);
+    }
+    else if(errno==0){
+       if (unlink(arguments[1]) != 0)
+        printf("-myShell: delete: %s: No such file or directory\n", arguments[1]);
+    }
+    else {
+    printf("An error occurred: %s\n", strerror(errno));
+}
+}

@@ -62,16 +62,31 @@ int main()
         
         getLocation();
         char *input = getInputFromUser();
+
        if (strcmp(input, "exit") == 0 || strncmp(input, "exit ", 5) == 0)
             logout(input);
 
 
         char **arguments = splitArgument(input);
+        // int i=0;
+        // while (arguments[i] != NULL)
+        // {
+        //     printf("arguments[%s],", arguments[i]);
+        //     i++;
+        // }
+        // puts("");
+        if(strcmp(arguments[0], "exit") == 0){
+            free(arguments);
+            logout(input);
+}
+
         int piping = replacePipeWithNull(arguments);
         if (strcmp(input, "echo") == 0)
             echo(arguments);
         else if (strcmp(input, "cd") == 0)
             cd(arguments);
+        else if (strcmp(input, "mv") == 0)
+            move(arguments);
         else if (strncmp(input, "cp", 2) == 0){
         puts("cp");
             cp(arguments);

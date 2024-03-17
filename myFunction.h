@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 # include <pwd.h>
 #include <dirent.h>
+#include <errno.h>
 #define SIZE_BUFF 4096
 #define SIZE_HOSTNAME 256
 char* getInputFromUser();
@@ -33,8 +34,6 @@ char* getInputFromUser();
  */
 char** splitArgument(char*);
 void getLocation();
-
-
 void logout(char* input);
 void echo(char** arguments);
 void cd(char **);
@@ -43,5 +42,6 @@ void get_dir();
 void delete(char **arguments);
 void systemCall(char **arguments);
 void mypipe(char **,char ** );
+void move(char **arguments);
 
 
