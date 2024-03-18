@@ -43,5 +43,6 @@ void delete(char **arguments);
 void systemCall(char **arguments);
 void mypipe(char **,char ** );
 void move(char **arguments);
+void wordCount(char **arguments);
 
 

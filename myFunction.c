@@ -315,3 +315,53 @@ void move(char **arguments)
     printf("An error occurred: %s\n", strerror(errno));
 }
 }
+void wordCount(char **arguments)
+{
+    if(arguments[1]==NULL||arguments[2]==NULL){
+        puts("error");
+        return;
+    }
+    if(arguments[3]!=NULL){
+        puts("error");
+        return;
+    }
+    FILE *file;
+    char ch;
+    int wordCount = 0, lineCount = 0;
+    char prevChar = '\0';
+    int inWord = 0;
+    if ((file = fopen(arguments[2], "r")) == NULL)
+    {
+        puts("error");
+        return;
+    }
+    while ((ch = fgetc(file)) != EOF)
+    {
+        if ((ch == ' ' || ch == '\n' || ch == '\t') && !inWord)
+        {
+            inWord = 1;
+            wordCount++;
+          if (ch == '\n') {
+            lineCount++;
+        }
+        } else if (ch != ' ' && ch != '\n' && ch != '\t') {
+            inWord = 0;
+        }
+    }
+     prevChar = ch;
+
+    // Check if the last word was not followed by a space, newline or tab
+    if (prevChar != ' ' && prevChar != '\n' && prevChar != '\t') {
+        wordCount++;
+    }
+    
+
+    fclose(file);
+    if (strcmp(arguments[1], "-l") == 0){
+        printf("%d %s\n", lineCount, arguments[2]);
+    }
+     else if (strcmp(arguments[1], "-w") == 0){
+        printf("%d %s\n", wordCount, arguments[2]);
+     }
+     else printf("wc: invalid option -- '%c'\n", arguments[1][1]);
+}
