@@ -97,6 +97,8 @@ int main()
         }
         else if (strcmp(input, "cd") == 0)
             cd(arguments);
+        else if (strcmp(input, "read") == 0)
+            readfile(arguments);
         else if (strcmp(input, "mv") == 0)
             move(arguments);
         else if (strcmp(input, "wc") == 0)

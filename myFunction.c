@@ -404,3 +404,24 @@ void echorite(char **arguments)
     fprintf(file, "%s ","\n");
     fclose(file);
 }
+void readfile(char **arguments)
+{
+    if(arguments[1]==NULL){
+        puts("error");
+        return;
+    }
+    if(arguments[2]!=NULL){
+        puts("error");
+        return;
+    }
+    FILE *file;
+    char ch;
+    if ((file = fopen(arguments[1], "r")) == NULL)
+    {
+        puts("error");
+        return;
+    }
+    while ((ch = fgetc(file)) != EOF)
+        putchar(ch);
+    fclose(file);
+}

@@ -46,6 +46,6 @@ void move(char **arguments);
 void wordCount(char **arguments);
 void echoppend(char **arguments);
 void echorite(char **arguments);
-void read(char **arguments);
+void readfile(char **arguments);
 
 
