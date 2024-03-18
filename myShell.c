@@ -138,5 +138,14 @@ char ***splitArray = splitArgumentsArray(arguments,size);
 
 void welcome()
 {
-    puts("Welcome to my Shell");
+    printf(
+        "    MMMMMM      OOOOOO     SSSSSS    H      H     EEEEEEE     |  Welcome to Moshe Shell                           \n"      
+        "  M m   m  M  O        O  S          H      H     E           |                                                   \n"      
+        "  M   m    M  O        O   SSSSS     HHHHHHH      EEEEEEE     |   https://github.com/moshegitlin/myProjekt         \n"      
+        "  M        M  O        O        S    H      H     E           |                                                   \n"     
+        "  M        M   O      O         S    H      H     E           |   Have Fun!                                       \n"     
+        "  M        M    OOOOOO    SSSSSS     H      H     EEEEEEE     |                                                   \n"
+    );
 }
+
+
