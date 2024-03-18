@@ -365,3 +365,42 @@ void wordCount(char **arguments)
      }
      else printf("wc: invalid option -- '%c'\n", arguments[1][1]);
 }
+void echoppend(char **arguments)
+{
+    int size=0;
+     while (arguments[size] != NULL) {
+        size++;
+    }
+    FILE *file;
+    
+    if ((file = fopen(arguments[size-1], "a")) == NULL)
+    {
+        puts("error");
+        return;
+    }
+   for (int i = 1; i < size-2; i++){
+    fprintf(file, "%s ", arguments[i]);
+   }
+    fprintf(file, "%s ","\n");
+    fclose(file);
+
+}
+void echorite(char **arguments)
+{
+    int size=0;
+     while (arguments[size] != NULL) {
+        size++;
+    }
+    FILE *file;
+    
+    if ((file = fopen(arguments[size-1], "w")) == NULL)
+    {
+        puts("error");
+        return;
+    }
+   for (int i = 1; i < size-2; i++){
+    fprintf(file, "%s ", arguments[i]);
+   }
+    fprintf(file, "%s ","\n");
+    fclose(file);
+}

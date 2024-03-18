@@ -47,10 +47,14 @@ int replacePipeWithNull(char **arguments) {
         }
         i++;
     }
-    if(res==1){
-        return i;
-    }
     return res;
+}
+int sizeArray(char **arguments) {
+    int i = 0;
+    while (arguments[i] != NULL) {
+        i++;
+    }
+    return i;
 }
 
 int main()
@@ -81,8 +85,16 @@ int main()
 }
 
         int piping = replacePipeWithNull(arguments);
-        if (strcmp(input, "echo") == 0)
+        int size = sizeArray(arguments);
+        if (strcmp(input, "echo") == 0){
+            if(size ==1) puts("");
+            else if(strcmp(arguments[1],">") ==0 || strcmp(arguments[1],">>") ==0)
+             puts("-bash: syntax error near unexpected token `newline'");
+            else if(strcmp(arguments[size-2],">")==0) echorite(arguments);
+            else if(strcmp(arguments[size-2],">>")==0) echoppend(arguments);
+            else
             echo(arguments);
+        }
         else if (strcmp(input, "cd") == 0)
             cd(arguments);
         else if (strcmp(input, "mv") == 0)
@@ -99,7 +111,7 @@ int main()
             get_dir(arguments);
              else if (piping)
         {
-char ***splitArray = splitArgumentsArray(arguments, piping);
+char ***splitArray = splitArgumentsArray(arguments,size);
           mypipe(splitArray[0], splitArray[1]);
           wait(NULL);
 
