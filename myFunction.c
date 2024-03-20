@@ -1,7 +1,7 @@
 #include "myFunction.h"
 void getLocation()
 {
-    struct passwd *pw; // זה מצביע למבנה  שמכילאת פרטי המשתמש במערכת ההפעלה
+    struct passwd *pw; // זה מצביע למבנה  שמכיל את פרטי המשתמש במערכת ההפעלה
     pw = getpwuid(getuid());
     if(!pw)
     {
@@ -9,8 +9,8 @@ void getLocation()
         return;
     }
 
-    char hostname[SIZE_HOSTNAME];
-   if (gethostname(hostname, SIZE_HOSTNAME) == -1) {
+    char hostname[SIZE_HOSTNAME]; // מערך שמכיל את שם המחשב
+   if (gethostname(hostname, SIZE_HOSTNAME) == -1) { // פונקציה שמחזירה את שם המחשב
         perror("Error getting hostname");
         return;
     }
@@ -32,17 +32,17 @@ void getLocation()
         return;
     }
 
-    if (getcwd(location, size) == NULL){
+    if (getcwd(location, size) == NULL){// פונקציה שמחזירה את הנתיב הנוכחי
         printf("Error getting path\n");
         free(location);
         return;
 }
     printf("\033[1;31m");
-    printf("%s@%s", pw->pw_name,hostname);
+    printf("%s@%s", pw->pw_name,hostname);// הדפסת שם המשתמש ושם המחשב
     printf("\033[0m");
     printf(":");
     printf("\033[1;32m");
-    printf("%s", location);
+    printf("%s", location);// הדפסת הנתיב הנוכחי
     printf("\033[0m");
     printf("$ ");
     free(location);
@@ -72,7 +72,11 @@ void logout(char *input)
     puts("logout");
     exit(EXIT_SUCCESS); // EXIT_SUCCESS = 0
 }
-
+/**
+ * This function is a custom implementation of the strtok function. It takes a string, a delimiter character, and a flag to check for quotes.
+ * The function splits the input string into tokens based on the delimiter. If the check_quotes flag is set, it treats quoted sections as a single token.
+ * It returns a pointer to the next token in the string.
+ */
 char *my_strtok(char *str, const char delim,int check_quotes) {
     static char *next_token = NULL; 
     char *token;
@@ -135,11 +139,10 @@ char *my_strtok(char *str, const char delim,int check_quotes) {
     }
     return token;
 }
-
 char **splitArgument(char *str)
 {
     char *subStr;
-    subStr = my_strtok(str, ' ',1);
+    subStr = my_strtok(str, ' ',1);//הפעלת הפונקציה על המחרוזת עם פרמטר המציין שאני רוצה לבדוק גרשיים
     int size = 2;
     int index = 0;
     char **argumnts = (char **)malloc(size * sizeof(char *));
@@ -181,7 +184,7 @@ char* concatenateStrings(char** arguments,int size){
     return temp;
 }
 void cd(char **path) {
-    if (path[2] != NULL) {
+    if (path[2] != NULL) {// במקרה של רווחים טיפלתי בפונקציה my_strtok
         printf("-myShell: cd: too many arguments\n");
         return;
     } // בדיקה האם יש יותר מדי ארגומנטים
@@ -200,19 +203,19 @@ void cp(char **arguments)
     }
     char ch;
     FILE *src, *des;
-    if ((src = fopen(arguments[1], "r")) == NULL)
+    if ((src = fopen(arguments[1], "r")) == NULL)//open file source
     {
         puts("error");
         return;
     }
 
-    if ((des = fopen(arguments[2], "w")) == NULL)
+    if ((des = fopen(arguments[2], "w")) == NULL)//open file destination
     {
         puts("error");
         fclose(src);
         return;
     }
-    while ((ch = fgetc(src)) != EOF)
+    while ((ch = fgetc(src)) != EOF)//copy the file
         fputc(ch, des);
 
     fclose(src);
@@ -232,13 +235,13 @@ void get_dir()
 {
     DIR *dir;
     struct dirent *ent;
-    if ((dir = opendir("./")) == NULL)
+    if ((dir = opendir("./")) == NULL)//open the directory
     {
         perror("");
         return;
     }
-    while ((ent = readdir(dir)) != NULL)
-        printf("%s ", ent->d_name);
+    while ((ent = readdir(dir)) != NULL)//read the directory
+        printf("%s ", ent->d_name);//print the files
     puts("");
 }
 void systemCall(char **arguments)
@@ -294,25 +297,25 @@ void move(char **arguments)
         puts("too many arguments");
         return;
     }
-    cp(arguments);
-    if(errno==2){
+    cp(arguments);//create a copy of the file
+    if(errno==2){ // if the file not exist
         printf("mv: cannot stat '%s': No such file or directory\n", arguments[1]);
     }
-    else if(errno==13){
+    else if(errno==13){// if the user not have permission
         printf("mv: cannot create regular file '%s': Permission denied\n", arguments[2]);
     }
-    else if(errno==21){
+    else if(errno==21){// if the user try to move a directory
         printf("mv: cannot create regular file '%s': Is a directory\n", arguments[2]);
     }
-    else if(errno==17){
+    else if(errno==17){// if the user try to move a file to a file that already exist
         printf("mv: cannot create regular file '%s': File exists\n", arguments[2]);
     }
-    else if(errno==0){
-       if (unlink(arguments[1]) != 0)
+    else if(errno==0){ // if the file was created
+       if (unlink(arguments[1]) != 0)//delete the original file
         printf("-myShell: delete: %s: No such file or directory\n", arguments[1]);
     }
     else {
-    printf("An error occurred: %s\n", strerror(errno));
+    printf("An error occurred: %s\n", strerror(errno));// if the error is not one of the above
 }
 }
 void wordCount(char **arguments)
@@ -337,14 +340,14 @@ void wordCount(char **arguments)
     }
     while ((ch = fgetc(file)) != EOF)
     {
-        if ((ch == ' ' || ch == '\n' || ch == '\t') && !inWord)
+        if ((ch == ' ' || ch == '\n' || ch == '\t') && !inWord)// אם זה לא אות או מספר ואני לא במילה
         {
-            inWord = 1;
+            inWord = 1;//כדי לא לספור רווחים לפני מילה
             wordCount++;
           if (ch == '\n') {
             lineCount++;
         }
-        } else if (ch != ' ' && ch != '\n' && ch != '\t') {
+        } else if (ch != ' ' && ch != '\n' && ch != '\t') {//if it's a end of a word 
             inWord = 0;
         }
     }
@@ -357,10 +360,10 @@ void wordCount(char **arguments)
     
 
     fclose(file);
-    if (strcmp(arguments[1], "-l") == 0){
+    if (strcmp(arguments[1], "-l") == 0){// אם המשתמש רוצה לדעת רק את מספר השורות
         printf("%d %s\n", lineCount, arguments[2]);
     }
-     else if (strcmp(arguments[1], "-w") == 0){
+     else if (strcmp(arguments[1], "-w") == 0){// אם המשתמש רוצה לדעת רק את מספר המילים
         printf("%d %s\n", wordCount, arguments[2]);
      }
      else printf("wc: invalid option -- '%c'\n", arguments[1][1]);
@@ -368,18 +371,18 @@ void wordCount(char **arguments)
 void echoppend(char **arguments)
 {
     int size=0;
-     while (arguments[size] != NULL) {
+     while (arguments[size] != NULL) {// חישוב גודל המערך
         size++;
     }
     FILE *file;
     
-    if ((file = fopen(arguments[size-1], "a")) == NULL)
+    if ((file = fopen(arguments[size-1], "a")) == NULL)// פתיחת הקובץ במצב כתיבה שמוסיף את המחרוזת לקובץ
     {
         puts("error");
         return;
     }
    for (int i = 1; i < size-2; i++){
-    fprintf(file, "%s ", arguments[i]);
+    fprintf(file, "%s ", arguments[i]);// כתיבת המחרוזת לקובץ
    }
     fprintf(file, "%s ","\n");
     fclose(file);
@@ -388,20 +391,20 @@ void echoppend(char **arguments)
 void echorite(char **arguments)
 {
     int size=0;
-     while (arguments[size] != NULL) {
+     while (arguments[size] != NULL) {// חישוב גודל המערך
         size++;
     }
     FILE *file;
     
-    if ((file = fopen(arguments[size-1], "w")) == NULL)
+    if ((file = fopen(arguments[size-1], "w")) == NULL)// פתיחת הקובץ במצב כתיבה שמוחק את המידע הקודם
     {
         puts("error");
         return;
     }
-   for (int i = 1; i < size-2; i++){
+   for (int i = 1; i < size-2; i++){// כתיבת המחרוזת לקובץ
     fprintf(file, "%s ", arguments[i]);
    }
-    fprintf(file, "%s ","\n");
+    fprintf(file, "%s ","\n");//add a linebreak
     fclose(file);
 }
 void readfile(char **arguments)
@@ -416,12 +419,12 @@ void readfile(char **arguments)
     }
     FILE *file;
     char ch;
-    if ((file = fopen(arguments[1], "r")) == NULL)
+    if ((file = fopen(arguments[1], "r")) == NULL)// פתיחת הקובץ
     {
         puts("error");
         return;
     }
-    while ((ch = fgetc(file)) != EOF)
+    while ((ch = fgetc(file)) != EOF)// קריאת הקובץ
         putchar(ch);
     fclose(file);
 }
